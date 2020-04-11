@@ -7,6 +7,7 @@ from torch.autograd import Variable
 
 import scipy.io as sio
 import numpy as np
+import cv2 as cv
 
 import torchvision.transforms as transforms
 ###############################################################################
@@ -268,6 +269,8 @@ class ShadingLoss(nn.Module):
                     + self.ScaleInvarianceFramework(predication2, im1, mask))
         return self.loss
 
+
+
 class JointLoss(nn.Module):
     def __init__(self):
         super(JointLoss, self).__init__()
@@ -284,6 +287,8 @@ class JointLoss(nn.Module):
 
         diff = torch.mul(mask, torch.pow(prediction_n - gt,2))
         return torch.sum(diff)/num_valid
+
+
 
     def L1GradientMatchingLoss(self, prediction, mask, gt):
         N = torch.sum( mask )
@@ -387,6 +392,147 @@ class JointLoss(nn.Module):
         #print(A.shape)
         self.loss =  self.LinearScaleInvarianceFramework(predication, gt, mask)
         return self.loss
+
+
+### new Loss function to add a color-aware loss
+class JointColorLoss(nn.Module):
+    def __init__(self):
+        super(JointLoss, self).__init__()
+        self.loss = None
+
+    def L1Loss(self, prediction, mask, gt):
+        prediction_n = prediction
+        num_valid = torch.sum( mask )
+        diff = torch.mul(mask, torch.abs(prediction - gt))
+        return torch.sum(diff)/num_valid
+
+    def L2Loss(self, prediction_n, mask, gt):
+        num_valid = torch.sum( mask )
+
+        diff = torch.mul(mask, torch.pow(prediction_n - gt,2))
+        return torch.sum(diff)/num_valid
+
+	## color-aware loss
+	def L2ColorLoss(self,prediction_n, mask, gt):
+		num_valid = torch.sum( mask )
+		
+		## images are converted to HSL
+		pred_HSV=cv.cvtColor(prediction_n,cv.COLOR_RGB2HSV)
+		gt_HSV = cv.cvtColor(gt,cv.COLOR_RGB2HSV)
+		
+		## compute L2 loss based on hue angle
+        diff = torch.mul(mask, torch.pow(pred_HSV[:,:,0] - gt_HSV[:,:,0],2))
+
+		## return loss
+        return torch.sum(diff)/num_valid
+
+
+    def L1GradientMatchingLoss(self, prediction, mask, gt):
+        N = torch.sum( mask )
+        diff = prediction - gt
+        diff = torch.mul(diff, mask)
+
+        v_gradient = torch.abs(diff[:,:,0:-2,:] - diff[:,:,2:,:])
+        v_mask = torch.mul(mask[:,:,0:-2,:], mask[:,:,2:,:])
+        v_gradient = torch.mul(v_gradient, v_mask)
+
+        h_gradient = torch.abs(diff[:,:,:,0:-2] - diff[:,:,:,2:])
+        h_mask = torch.mul(mask[:,:,:,0:-2], mask[:,:,:,2:])
+        h_gradient = torch.mul(h_gradient, h_mask)
+
+        gradient_loss = (torch.sum(h_gradient) + torch.sum(v_gradient))/2.0
+        gradient_loss = gradient_loss/N
+
+        return gradient_loss
+
+    def LinearScaleInvarianceFramework(self, prediction, gt, mask):
+
+        assert(prediction.size(1) == gt.size(1))
+        assert(prediction.size(1) == mask.size(1))
+        #w_data = 1.0
+        # w_grad = 0.5
+        #gt_vec = gt[mask > 0.1]
+        #pred_vec = prediction[mask > 0.1]
+        #gt_vec = gt_vec.unsqueeze(1).float().cpu()
+        #pred_vec = pred_vec.unsqueeze(1).float().cpu()
+
+        #scale, _ = torch.gels(gt_vec.data, pred_vec.data)
+        #scale = scale[0,0]
+
+        # print("scale" , scale)
+        # sys.exit()
+        prediction_scaled = prediction #* scale
+        final_loss =  self.L1Loss(prediction_scaled, mask, gt)
+
+		## adding new color-aware loss to final loss
+		final_loss += self.L2ColorLoss(prediction_scaled,mask,gt)
+
+        prediction_1 = prediction_scaled[:,:,::2,::2]
+        prediction_2 = prediction_1[:,:,::2,::2]
+        prediction_3 = prediction_2[:,:,::2,::2]
+
+        mask_1 = mask[:,:,::2,::2]
+        mask_2 = mask_1[:,:,::2,::2]
+        mask_3 = mask_2[:,:,::2,::2]
+
+        gt_1 = gt[:,:,::2,::2]
+        gt_2 = gt_1[:,:,::2,::2]
+        gt_3 = gt_2[:,:,::2,::2]
+
+        final_loss += self.L1GradientMatchingLoss(prediction_scaled , mask, gt)
+        final_loss += self.L1GradientMatchingLoss(prediction_1, mask_1, gt_1)
+        final_loss += self.L1GradientMatchingLoss(prediction_2, mask_2, gt_2)
+        final_loss += self.L1GradientMatchingLoss(prediction_3, mask_3, gt_3)
+
+        return final_loss
+
+
+    def ReconstructionLoss(self, rgb_img, predication, gt, lightColors, mask):
+        total_loss = Variable(torch.FloatTensor(1))
+        total_loss[0] = 0
+
+        predication = predication/(1e-6 + torch.sum(predication, 1, keepdim=True).repeat(1, 3, 1, 1))
+
+        rgb_img = Variable(rgb_img.cpu(), requires_grad = False)
+        gt = Variable(gt.cpu(), requires_grad=False)
+        lightColors = Variable(lightColors.cpu(), requires_grad=False)
+        mask = Variable(mask.cpu(), requires_grad=False)
+
+        no_albedo_nf = rgb_img / (1e-6 + predication)
+        sum_albedo = torch.sum(no_albedo_nf, 1, keepdim=True)
+        gamma_p = no_albedo_nf / (sum_albedo.repeat(1, 3, 1, 1) + 1e-6)
+        img_wb_p = rgb_img / (3 * gamma_p + 1e-6)
+
+        no_albedo_nf = rgb_img / (1e-6 + gt)
+        sum_albedo = torch.sum(no_albedo_nf, 1, keepdim=True)
+        gamma = no_albedo_nf / (sum_albedo.repeat(1, 3, 1, 1) + 1e-6)
+        img_wb = rgb_img / (3 * gamma + 1e-6)
+
+        image_numpy = img_wb[0].cpu().float().numpy()
+        image_numpy = (np.transpose(image_numpy, (1, 2, 0)))
+
+        im_numpy = rgb_img[0].cpu().float().numpy()
+        im_numpy = (np.transpose(im_numpy, (1, 2, 0)))
+
+        mask_numpy = mask[0].cpu().float().numpy()
+        mask_numpy = (np.transpose(mask_numpy, (1, 2, 0)))
+
+        gamma_numpy = gamma[0].cpu().float().numpy()
+        gamma_numpy = (np.transpose(gamma_numpy, (1, 2, 0)))
+
+        sio.savemat('testWb.mat', {'image': image_numpy, 'input': im_numpy, 'mask': mask_numpy, 'gamma': gamma_numpy})
+
+        total_loss = self.L2Loss(img_wb_p, mask, img_wb)
+        return total_loss/rgb_img.size(0)
+
+    def __call__(self, gt, predication, mask):
+        #mask = Variable(mask.cuda(), requires_grad=False)
+        #mask_R = mask[:, 0, :, :].unsqueeze(1).repeat(1, A.size(1), 1, 1)
+        #gt_R = Variable(A.cuda(), requires_grad=False)
+        #print(A.shape)
+        self.loss =  self.LinearScaleInvarianceFramework(predication, gt, mask)
+        return self.loss
+
 
     # Defines the generator that consists of Resnet blocks between a few
 # downsampling/upsampling operations.
