@@ -27,10 +27,10 @@ class ThreeLayersModel(BaseModel):
         # specify the training losses you want to print out. The program will call base_model.get_current_losses
         self.loss_names = ['G_A', 'G_B', 'G_C']  # ['G_GAN', 'G_L1', 'D_real', 'D_fake']
         # specify the images you want to save/display. The program will call base_model.get_current_visuals
-       
+
         # if self.isTrain:
         #     self.visual_names = ['rgb_img', 'img1', 'img2',  'im1', 'im2', 'chrom', 'predication', 'shading1', 'shading2', 'est_im1', 'est_im2']
-        
+
         if self.isTrain:
             self.visual_names = ['rgb_img', 'img1', 'img2', 'predication', 'shading1', 'shading2', 'est_im1', 'est_im2']
         else:
@@ -120,8 +120,8 @@ class ThreeLayersModel(BaseModel):
         #else:
         #    input_GT = torch.cat((self.rgb_img, self.im2, self.im1), 1)
 
-        #gt_imgs = self.netG_C(input_GT)
-        #gt_im1, gt_im2 = gt_imgs[:,:3,:,:], gt_imgs[:,3:,:,:]
+        gt_imgs = self.netG_C(input_GT)
+        gt_im1, gt_im2 = gt_imgs[:,:3,:,:], gt_imgs[:,3:,:,:]
         img = est_im1 + est_im2
 
         #self.loss_G_C = .5 * self.rloss(self.img1, self.img2, est_im1, est_im2, self.mask) + \
@@ -129,8 +129,8 @@ class ThreeLayersModel(BaseModel):
         #                .5 * self.loss(self.rgb_img, img, self.mask)
 
         #TODO: add color loss
-        self.loss_G_C = .5 * self.loss(self.rgb_img, img, self.mask)
-                
+        self.loss_G_C = .5 * self.loss(gt_im1, est_im1, self.mask)
+
         self.loss_G_C.backward()
 
     # def backward_G_B(self):
