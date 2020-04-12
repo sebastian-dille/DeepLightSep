@@ -432,7 +432,7 @@ class JointColorLoss(nn.Module):
         #gt_HSV=gt_HSV.gpu()
         		
         ## compute L2 loss based on hue angle
-        diff = torch.mul(mask, torch.pow(h - gt_H,2))
+        diff = torch.pow(h - gt_H,2)
         
         		## return loss
         return torch.sum(diff)/num_valid
