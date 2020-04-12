@@ -4,9 +4,9 @@ from .base_model import BaseModel
 from . import networks
 
 
-class ThreeLayersModel(BaseModel):
+class ThreeLayersColorModel(BaseModel):
     def name(self):
-        return 'ThreeLayersModel'
+        return 'ThreeLayersColorModel'
 
     @staticmethod
     def modify_commandline_options(parser, is_train=True):
@@ -120,8 +120,8 @@ class ThreeLayersModel(BaseModel):
         #else:
         #    input_GT = torch.cat((self.rgb_img, self.im2, self.im1), 1)
 
-        gt_imgs = self.netG_C(input_GT)
-        gt_im1, gt_im2 = gt_imgs[:,:3,:,:], gt_imgs[:,3:,:,:]
+        #gt_imgs = self.netG_C(input_GT)
+        #gt_im1, gt_im2 = gt_imgs[:,:3,:,:], gt_imgs[:,3:,:,:]
         img = est_im1 + est_im2
 
         #self.loss_G_C = .5 * self.rloss(self.img1, self.img2, est_im1, est_im2, self.mask) + \
@@ -129,7 +129,7 @@ class ThreeLayersModel(BaseModel):
         #                .5 * self.loss(self.rgb_img, img, self.mask)
 
         #TODO: add color loss
-        self.loss_G_C = .5 * self.loss(gt_im1, est_im1, self.mask)
+        self.loss_G_C = .5 * self.loss(self.img1, est_im1, self.mask)
 
         self.loss_G_C.backward()
 
