@@ -8,6 +8,7 @@ from torch.autograd import Variable
 import scipy.io as sio
 import numpy as np
 import cv2 as cv
+from pytorch_hsv import HSVLoss
 
 import torchvision.transforms as transforms
 ###############################################################################
@@ -416,21 +417,21 @@ class JointColorLoss(nn.Module):
     def L2ColorLoss(self,prediction_n, mask, gt):
         num_valid = torch.sum( mask )  
         
-        pred_n = prediction_n.cpu()
-        pred_n = pred_n.detach().numpy()
+        #pred_n = prediction_n.cpu()
+        #pred_n = pred_n.detach().numpy()
         
-        gt_n = gt.cpu()
-        gt_n = gt_n.detach().numpy()
+        #gt_n = gt.cpu()
+        #gt_n = gt_n.detach().numpy()
         ## images are converted to HSL
-        pred_n=np.asarray(pred_n,dtype=np.uint8)
-        gt_n=np.asarray(gt_n,dtype=np.uint8)
-        pred_HSV=cv.cvtColor(pred_n,cv.COLOR_RGB2HSV)
-        gt_HSV = cv.cvtColor(gt_n,cv.COLOR_RGB2HSV)
-        pred_HSV=pred_HSV.gpu()
-        gt_HSV=gt_HSV.gpu()
+        #pred_n=np.asarray(pred_n,dtype=np.uint8)
+        #gt_n=np.asarray(gt_n,dtype=np.uint8)
+        h, s, v=HSVLoss.get_hsv(prediction_n)
+        gt_H, gt_S, gt_V = HSVLoss.get_hsv(gt)
+        #pred_HSV=pred_HSV.gpu()
+        #gt_HSV=gt_HSV.gpu()
         		
         ## compute L2 loss based on hue angle
-        diff = torch.mul(mask, torch.pow(pred_HSV[:,:,0] - gt_HSV[:,:,0],2))
+        diff = torch.mul(mask, torch.pow(h - gt_H,2))
         
         		## return loss
         return torch.sum(diff)/num_valid
