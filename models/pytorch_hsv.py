@@ -5,7 +5,7 @@ from torch.nn import functional as F
 
 class HSVLoss(nn.Module):
     def __init__(self, h=0, s=1, v=0.7, eps=1e-7, threshold_h=0.03, threshold_sv=0.1):
-        super(HSV_Loss, self).__init__()
+        super(HSVLoss, self).__init__()
         self.hsv = [h, s, v]
         self.loss = nn.L1Loss(reduction='none')
         self.eps = eps
