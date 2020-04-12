@@ -422,8 +422,8 @@ class JointColorLoss(nn.Module):
         gt_n = gt.cpu()
         gt_n = gt_n.detach().numpy()
         ## images are converted to HSL
-        np.asarray(pred_n,dtype=np.uint8)
-        np.asarray(gt_n,dtype=np.uint8)
+        pred_n=np.asarray(pred_n,dtype=np.uint8)
+        gt_n=np.asarray(gt_n,dtype=np.uint8)
         pred_HSV=cv.cvtColor(pred_n,cv.COLOR_RGB2HSV)
         gt_HSV = cv.cvtColor(gt_n,cv.COLOR_RGB2HSV)
         pred_HSV=pred_HSV.gpu()
