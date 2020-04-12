@@ -425,8 +425,9 @@ class JointColorLoss(nn.Module):
         ## images are converted to HSL
         #pred_n=np.asarray(pred_n,dtype=np.uint8)
         #gt_n=np.asarray(gt_n,dtype=np.uint8)
-        h, s, v=HSVLoss.get_hsv(prediction_n)
-        gt_H, gt_S, gt_V = HSVLoss.get_hsv(gt)
+        loss= HSVLoss(h=0, s=0, v=0, threshold_h=0, threshold_sv=0)
+        h, s, v=loss.get_hsv(prediction_n)
+        gt_H, gt_S, gt_V =loss.get_hsv(gt)
         #pred_HSV=pred_HSV.gpu()
         #gt_HSV=gt_HSV.gpu()
         		
