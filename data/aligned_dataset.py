@@ -30,6 +30,7 @@ class AlignedDataset(BaseDataset):
         self.image_paths = make_dataset(self.dir_AB)
         self.image_paths = sorted(self.image_paths)
         self.isTrain = opt.isTrain
+        self.isFinetune = opt.continue_train
         # self.albedo_paths = sorted(self.albedo_paths)
         # self.mask_paths = sorted(self.mask_paths)
         assert (opt.resize_or_crop == 'resize_and_crop')
@@ -118,14 +119,15 @@ class AlignedDataset(BaseDataset):
             #mask = skimage.morphology.binary_erosion(mask, square(1))
             mask = np.expand_dims(mask, axis=2)
             mask = np.repeat(mask, 3, axis=2)
-
-            l1 = content['l1']
-            l2 = content['l2']
             
-            rand_id = random.randint(0, 3)
-            light_id1 = random.randint(0, 8)
-            light_id2 = random.randint(0, 8)
-            arr_id = random.randint(0, 1)
+            if !self.isFinetune:
+                l1 = content['l1']
+                l2 = content['l2']
+            
+                rand_id = random.randint(0, 3)
+                light_id1 = random.randint(0, 8)
+                light_id2 = random.randint(0, 8)
+                arr_id = random.randint(0, 1)
 
 
             img1 = content['im1']
@@ -140,7 +142,8 @@ class AlignedDataset(BaseDataset):
             img2[img2 > 1.0] = 1.0
             img2[img2 < 0.0] = 0.0
 
-            [img1, img2, l1, l2] = self.produceColor(img1, img2, arr_id, light_id1, light_id2, l1, l2)
+            if ! self.isFinetune:
+                [img1, img2, l1, l2] = self.produceColor(img1, img2, arr_id, light_id1, light_id2, l1, l2)
             # img2 = self.DA(img2, rand_id)
             #img1 = img1/2
             #img2 = img2/2
@@ -188,59 +191,61 @@ class AlignedDataset(BaseDataset):
             #    l2 = np.reshape(l2, (3, -1))
 
             # rgb_img = img1 + img2
-            lightColor = np.concatenate((l1, l2), axis=1)
-            lightColor = torch.from_numpy(lightColor).contiguous().float()
+            if !self.isFinetune:
+                lightColor = np.concatenate((l1, l2), axis=1)
+                lightColor = torch.from_numpy(lightColor).contiguous().float()
 
             rgb_img = torch.from_numpy(np.transpose(rgb_img, (2, 0, 1))).contiguous().float()
             chrom = torch.from_numpy(np.transpose(chrom, (2, 0, 1))).contiguous().float()
             mask = torch.from_numpy(np.transpose(mask.astype(float), (2, 0, 1))).contiguous().float()
 
-            no_albedo_nf = rgb_img / (1e-6 + chrom)
-            sum_albedo = torch.sum(no_albedo_nf, 0, keepdim=True)
-            gamma = no_albedo_nf / (sum_albedo.repeat(3, 1, 1) + 1e-6)
-            gamma = gamma.view(3, -1)
+            if !self.isFinetune:
+                no_albedo_nf = rgb_img / (1e-6 + chrom)
+                sum_albedo = torch.sum(no_albedo_nf, 0, keepdim=True)
+                gamma = no_albedo_nf / (sum_albedo.repeat(3, 1, 1) + 1e-6)
+                gamma = gamma.view(3, -1)
 
-            lightT = lightColor.t()
-            light = lightColor
-            B = torch.mm(lightT, gamma)
-            A = torch.mm(lightT, light)
-            shadings, _ = torch.gesv(B, A)
-            # shadings[0, :] = (shadings[0:, ] - torch.min(shadings[0, :]))/(torch.max(shadings[0:, ]) - torch.min(shadings[0, :]))
-            # shadings[1, :] = (shadings[1:, ] - torch.min(shadings[1, :]))/(torch.max(shadings[1:, ]) - torch.min(shadings[1, :]))
-            shadings[shadings != shadings] = 0.0
-            im1 = shadings[0, :].repeat(3, 1).view(3, rgb_img.size(1), rgb_img.size(2))
-            im2 = shadings[1, :].repeat(3, 1).view(3, rgb_img.size(1), rgb_img.size(2))
+                lightT = lightColor.t()
+                light = lightColor
+                B = torch.mm(lightT, gamma)
+                A = torch.mm(lightT, light)
+                shadings, _ = torch.gesv(B, A)
+                # shadings[0, :] = (shadings[0:, ] - torch.min(shadings[0, :]))/(torch.max(shadings[0:, ]) - torch.min(shadings[0, :]))
+                # shadings[1, :] = (shadings[1:, ] - torch.min(shadings[1, :]))/(torch.max(shadings[1:, ]) - torch.min(shadings[1, :]))
+                shadings[shadings != shadings] = 0.0
+                im1 = shadings[0, :].repeat(3, 1).view(3, rgb_img.size(1), rgb_img.size(2))
+                im2 = shadings[1, :].repeat(3, 1).view(3, rgb_img.size(1), rgb_img.size(2))
 
-            im1 = (im1 - torch.min(im1[mask > 0]))/(torch.max(im1[mask > 0]) - torch.min(im1[mask > 0]))
-            im2 = (im2 - torch.min(im2[mask > 0])) / (torch.max(im2[mask > 0]) - torch.min(im2[mask > 0]))
+                im1 = (im1 - torch.min(im1[mask > 0]))/(torch.max(im1[mask > 0]) - torch.min(im1[mask > 0]))
+                im2 = (im2 - torch.min(im2[mask > 0])) / (torch.max(im2[mask > 0]) - torch.min(im2[mask > 0]))
 
-            # remove nan values
-            im1[im1 != im1] = 0.0
-            im2[im2 != im2] = 0.0
+                # remove nan values
+                im1[im1 != im1] = 0.0
+                im2[im2 != im2] = 0.0
 
-            im1[mask == 0] = 0.0
-            im2[mask == 0] = 0.0
+                im1[mask == 0] = 0.0
+                im2[mask == 0] = 0.0
 
-            im1[0, :, :] *= lightColor[0, 0]
-            im1[1, :, :] *= lightColor[1, 0]
-            im1[2, :, :] *= lightColor[2, 0]
+                im1[0, :, :] *= lightColor[0, 0]
+                im1[1, :, :] *= lightColor[1, 0]
+                im1[2, :, :] *= lightColor[2, 0]
 
-            im2[0, :, :] *= lightColor[0, 1]
-            im2[1, :, :] *= lightColor[1, 1]
-            im2[2, :, :] *= lightColor[2, 1]
+                im2[0, :, :] *= lightColor[0, 1]
+                im2[1, :, :] *= lightColor[1, 1]
+                im2[2, :, :] *= lightColor[2, 1]
 
-            # normalize the data
-            # im1 = torch.mul(shadings[0, :].repeat(3, 1), lightColor[:, 0].view(3, 1).repeat(1, shadings.size(1)))
-            # im2 = torch.mul(shadings[1, :].repeat(3, 1), lightColor[:, 1].view(3, 1).repeat(1, shadings.size(1)))
+                # normalize the data
+                # im1 = torch.mul(shadings[0, :].repeat(3, 1), lightColor[:, 0].view(3, 1).repeat(1, shadings.size(1)))
+                # im2 = torch.mul(shadings[1, :].repeat(3, 1), lightColor[:, 1].view(3, 1).repeat(1, shadings.size(1)))
 
-            # im1 = im1.view(3, rgb_img.size(1), rgb_img.size(2))
-            # im2 = im2.view(3, rgb_img.size(1), rgb_img.size(2))
+                # im1 = im1.view(3, rgb_img.size(1), rgb_img.size(2))
+                # im2 = im2.view(3, rgb_img.size(1), rgb_img.size(2))
 
-            im1[im1 > 1] = 1.0
-            im2[im2 > 1] = 1.0
+                im1[im1 > 1] = 1.0
+                im2[im2 > 1] = 1.0
 
-            im1[im1 < 0] = 0.0
-            im2[im2 < 0] = 0.0
+                im1[im1 < 0] = 0.0
+                im2[im2 < 0] = 0.0
 
             # rgb_img = 2*rgb_img - 1.0
 
