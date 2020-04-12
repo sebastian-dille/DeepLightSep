@@ -417,10 +417,10 @@ class JointColorLoss(nn.Module):
         num_valid = torch.sum( mask )  
         
         ## images are converted to HSL
-		np.asarray(prediction_n)
-		np.asarray(gt)
-		prediction_n.convertTo(prediction_n,CV_8U)
-		gt.convertTo(gt,CV_8U)
+        np.asarray(prediction_n)
+        np.asarray(gt)
+        prediction_n.convertTo(prediction_n,cv.CV_8U)
+        gt.convertTo(gt,cv.CV_8U)
         pred_HSV=cv.cvtColor(prediction_n,cv.COLOR_RGB2HSV)
         gt_HSV = cv.cvtColor(gt,cv.COLOR_RGB2HSV)
         		
