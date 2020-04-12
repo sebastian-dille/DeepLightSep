@@ -85,12 +85,12 @@ class ThreeLayersColorModel(BaseModel):
         self.rgb_img = input['rgb_img'].to(self.device)
         self.image_paths = input['A_paths']
         if self.isTrain:
-            # self.chrom = input['chrom'].to(self.device)
+            #self.chrom = input['chrom'].to(self.device)
             # # self.gamma = input['gamma'].to(self.device)
-            # self.mask = input['mask'].to(self.device)
+            self.mask = input['mask'].to(self.device)
 
-            # self.im1 = input['im1'].to(self.device)
-            # self.im2 = input['im2'].to(self.device)
+            #self.im1 = input['im1'].to(self.device)
+            #self.im2 = input['im2'].to(self.device)
 
             self.img1 = input['img1'].to(self.device)
             self.img2 = input['img2'].to(self.device)
