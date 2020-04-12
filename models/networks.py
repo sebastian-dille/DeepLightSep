@@ -413,17 +413,17 @@ class JointColorLoss(nn.Module):
         return torch.sum(diff)/num_valid
 
 	## color-aware loss
-	def L2ColorLoss(self,prediction_n, mask, gt):
-		num_valid = torch.sum( mask )
-		
-		## images are converted to HSL
-		pred_HSV=cv.cvtColor(prediction_n,cv.COLOR_RGB2HSV)
-		gt_HSV = cv.cvtColor(gt,cv.COLOR_RGB2HSV)
-		
-		## compute L2 loss based on hue angle
+    def L2ColorLoss(self,prediction_n, mask, gt):
+        _valid = torch.sum( mask )  
+        
+        ## images are converted to HSL
+        pred_HSV=cv.cvtColor(prediction_n,cv.COLOR_RGB2HSV)
+        gt_HSV = cv.cvtColor(gt,cv.COLOR_RGB2HSV)
+        		
+        ## compute L2 loss based on hue angle
         diff = torch.mul(mask, torch.pow(pred_HSV[:,:,0] - gt_HSV[:,:,0],2))
-
-		## return loss
+        
+        		## return loss
         return torch.sum(diff)/num_valid
 
 
@@ -465,7 +465,7 @@ class JointColorLoss(nn.Module):
         final_loss =  self.L1Loss(prediction_scaled, mask, gt)
 
 		## adding new color-aware loss to final loss
-		final_loss += self.L2ColorLoss(prediction_scaled,mask,gt)
+        final_loss += self.L2ColorLoss(prediction_scaled,mask,gt)
 
         prediction_1 = prediction_scaled[:,:,::2,::2]
         prediction_2 = prediction_1[:,:,::2,::2]
