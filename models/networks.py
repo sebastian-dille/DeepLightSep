@@ -414,7 +414,7 @@ class JointColorLoss(nn.Module):
 
 	## color-aware loss
     def L2ColorLoss(self,prediction_n, mask, gt):
-        _valid = torch.sum( mask )  
+        num_valid = torch.sum( mask )  
         
         ## images are converted to HSL
         pred_HSV=cv.cvtColor(prediction_n,cv.COLOR_RGB2HSV)
