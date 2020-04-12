@@ -199,6 +199,9 @@ class AlignedDataset(BaseDataset):
             chrom = torch.from_numpy(np.transpose(chrom, (2, 0, 1))).contiguous().float()
             mask = torch.from_numpy(np.transpose(mask.astype(float), (2, 0, 1))).contiguous().float()
 
+            im1=img1
+            im2=img2
+            
             if not self.isFinetune:
                 no_albedo_nf = rgb_img / (1e-6 + chrom)
                 sum_albedo = torch.sum(no_albedo_nf, 0, keepdim=True)
