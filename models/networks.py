@@ -397,7 +397,7 @@ class JointLoss(nn.Module):
 ### new Loss function to add a color-aware loss
 class JointColorLoss(nn.Module):
     def __init__(self):
-        super(JointLoss, self).__init__()
+        super(JointColorLoss, self).__init__()
         self.loss = None
 
     def L1Loss(self, prediction, mask, gt):
