@@ -124,10 +124,10 @@ class AlignedDataset(BaseDataset):
                 l1 = content['l1']
                 l2 = content['l2']
             
-                rand_id = random.randint(0, 3)
-                light_id1 = random.randint(0, 8)
-                light_id2 = random.randint(0, 8)
-                arr_id = random.randint(0, 1)
+            rand_id = random.randint(0, 3)
+            light_id1 = random.randint(0, 8)
+            light_id2 = random.randint(0, 8)
+            arr_id = random.randint(0, 1)
 
 
             img1 = content['im1']
