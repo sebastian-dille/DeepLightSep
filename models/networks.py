@@ -416,11 +416,11 @@ class JointColorLoss(nn.Module):
     def L2ColorLoss(self,prediction_n, mask, gt):
         num_valid = torch.sum( mask )  
         
-        pred_n= prediction_n.cpu()
-        pred_n.detach().numpy()
+        pred_n = prediction_n.cpu()
+        pred_n = pred_n.detach().numpy()
         
-        gt_n=gt.cpu()
-        gt_n.detach().numpy()
+        gt_n = gt.cpu()
+        gt_n = gt_n.detach().numpy()
         ## images are converted to HSL
         np.asarray(pred_n)
         np.asarray(gt_n)
