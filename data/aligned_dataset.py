@@ -120,7 +120,7 @@ class AlignedDataset(BaseDataset):
             mask = np.expand_dims(mask, axis=2)
             mask = np.repeat(mask, 3, axis=2)
             
-            if !self.isFinetune:
+            if not self.isFinetune:
                 l1 = content['l1']
                 l2 = content['l2']
             
@@ -142,7 +142,7 @@ class AlignedDataset(BaseDataset):
             img2[img2 > 1.0] = 1.0
             img2[img2 < 0.0] = 0.0
 
-            if ! self.isFinetune:
+            if not self.isFinetune:
                 [img1, img2, l1, l2] = self.produceColor(img1, img2, arr_id, light_id1, light_id2, l1, l2)
             # img2 = self.DA(img2, rand_id)
             #img1 = img1/2
@@ -191,7 +191,7 @@ class AlignedDataset(BaseDataset):
             #    l2 = np.reshape(l2, (3, -1))
 
             # rgb_img = img1 + img2
-            if !self.isFinetune:
+            if not self.isFinetune:
                 lightColor = np.concatenate((l1, l2), axis=1)
                 lightColor = torch.from_numpy(lightColor).contiguous().float()
 
@@ -199,7 +199,7 @@ class AlignedDataset(BaseDataset):
             chrom = torch.from_numpy(np.transpose(chrom, (2, 0, 1))).contiguous().float()
             mask = torch.from_numpy(np.transpose(mask.astype(float), (2, 0, 1))).contiguous().float()
 
-            if !self.isFinetune:
+            if not self.isFinetune:
                 no_albedo_nf = rgb_img / (1e-6 + chrom)
                 sum_albedo = torch.sum(no_albedo_nf, 0, keepdim=True)
                 gamma = no_albedo_nf / (sum_albedo.repeat(3, 1, 1) + 1e-6)
