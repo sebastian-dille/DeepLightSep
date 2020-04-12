@@ -8,7 +8,7 @@ from torch.autograd import Variable
 import scipy.io as sio
 import numpy as np
 import cv2 as cv
-from pytorch_hsv import HSVLoss
+from .pytorch_hsv import HSVLoss
 
 import torchvision.transforms as transforms
 ###############################################################################
