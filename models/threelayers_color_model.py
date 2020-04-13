@@ -129,7 +129,7 @@ class ThreeLayersColorModel(BaseModel):
         #                .5 * self.loss(self.rgb_img, img, self.mask)
 
         #TODO: add color loss
-        self.loss_G_C = .5 * self.loss(self.img1, est_im1, self.mask)
+        self.loss_G_C = .5 * self.loss(self.img1, est_im1, self.mask) + .5 * self.loss(self.img2,est_im2,self.mask)
 
         self.loss_G_C.backward()
 
