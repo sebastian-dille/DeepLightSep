@@ -161,7 +161,7 @@ class AlignedDataset(BaseDataset):
             #    img1[:, :, i] = img1[:, :, i] * l1[i]
             #    img2[:, :, i] = img2[:, :, i] * l2[i]
 
-            rgb_img = img1 + img2
+            #rgb_img = img1 + img2
             #rgb_img[rgb_img > 1.0] = 1.0
             #rgb_img[rgb_img < 0.0] = 0.0
 
