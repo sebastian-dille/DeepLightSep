@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -J TrainingMLProject     # Name that will show up in squeue
-#SBATCH --gres=gpu:7         # Request 4 GPU "generic resource" requested 7 because of bug on venus-02
+#SBATCH --gres=gpu:4         # Request 4 GPU "generic resource" requested 7 because of bug on venus-02
 #SBATCH --time=2-00:00       # Max job time is 2 days
 #SBATCH --output=%N-%j.out   # Terminal output to file named (hostname)-(jobid).out
 #SBATCH --partition=long     # long partition (allows up to 7 days runtime)
@@ -18,4 +18,4 @@ conda activate DeepLightSep
 hostname
 echo ------------Starting Training---------
 echo $CUDA_AVAILABLE_DEVICES
-python train.py --dataroot /project/aksoy-lab/datasets/MultiIllumWild/ --model threelayers_color --continue_train --name FirstTrain --lrA 0.0001 --lrB 0.0001 --niter 100 --niter_decay 100  --display_id -1 --gpu_ids 3,4,5,6 
+ python train.py --dataroot /project/aksoy-lab/datasets/MultiIllumWild/ --model threelayers_color --continue_train --name SecondTrain --batch_size 4 --lrA 0.0001 --lrB 0.0001 --niter 100 --niter_decay 100  --display_id -1 --gpu_ids 0,1,2,3 
