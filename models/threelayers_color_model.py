@@ -25,7 +25,7 @@ class ThreeLayersColorModel(BaseModel):
         BaseModel.initialize(self, opt)
         self.isTrain = opt.isTrain
         # specify the training losses you want to print out. The program will call base_model.get_current_losses
-        self.loss_names = ['G_A', 'G_B', 'G_C']  # ['G_GAN', 'G_L1', 'D_real', 'D_fake']
+        self.loss_names = ['G_C']  # ['G_GAN', 'G_L1', 'D_real', 'D_fake']
         # specify the images you want to save/display. The program will call base_model.get_current_visuals
 
         # if self.isTrain:
