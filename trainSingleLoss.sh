@@ -4,7 +4,7 @@
 #SBATCH --time=2-00:00       # Max job time is 2 days
 #SBATCH --output=%N-%j.out   # Terminal output to file named (hostname)-(jobid).out
 #SBATCH --partition=long     # long partition (allows up to 7 days runtime)
-#SBATCH -w cs-venus-02       # Run it on venus-02 node
+#SBATCH -w cs-gpu3       # Run it on gpu3 node
 #SBATCH --qos=overcap
 # The SBATCH directives above set options similarly to command line arguments to srun
 # Run this script with: sbatch my_experiment.sh
@@ -18,4 +18,4 @@ conda activate DeepLightSep
 hostname
 echo ------------Starting Training---------
 echo $CUDA_AVAILABLE_DEVICES
- python train.py --dataroot /project/aksoy-lab/datasets/MultiIllumWild/ --model threelayers_color --continue_train --name SecondTrain --batch_size 4 --lrA 0.0001 --lrB 0.0001 --niter 100 --niter_decay 100  --display_id -1 --gpu_ids 0,1,2,3 
+ python train.py --dataroot /project/aksoy-lab/datasets/MultiIllumWild/ --model threelayers_color --continue_train --name DoubleColorLoss --batch_size 8 --lrA 0.0001 --lrB 0.0001 --niter 100 --niter_decay 100  --display_id -1 --gpu_ids 0,1,2,3
