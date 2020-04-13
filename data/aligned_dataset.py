@@ -130,17 +130,17 @@ class AlignedDataset(BaseDataset):
             arr_id = random.randint(0, 1)
 
 
-            img1 = content['im1']
-            img2 = content['im2']
+            img1 = content['img1']
+            img2 = content['img2']
 
-            img1 = np.nan_to_num(img1)
-            img2 = np.nan_to_num(img2)
+            #img1 = np.nan_to_num(img1)
+            #img2 = np.nan_to_num(img2)
 
-            img1[img1 > 1.0] = 1.0
-            img1[img1 < 0.0] = 0.0
+            #img1[img1 > 1.0] = 1.0
+            #img1[img1 < 0.0] = 0.0
 
-            img2[img2 > 1.0] = 1.0
-            img2[img2 < 0.0] = 0.0
+            #img2[img2 > 1.0] = 1.0
+            #img2[img2 < 0.0] = 0.0
 
             if not self.isFinetune:
                 [img1, img2, l1, l2] = self.produceColor(img1, img2, arr_id, light_id1, light_id2, l1, l2)
