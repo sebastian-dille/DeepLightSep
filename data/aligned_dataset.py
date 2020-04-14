@@ -30,7 +30,8 @@ class AlignedDataset(BaseDataset):
         self.image_paths = make_dataset(self.dir_AB)
         self.image_paths = sorted(self.image_paths)
         self.isTrain = opt.isTrain
-        self.isFinetune = opt.continue_train
+        if self.isTrain:
+            self.isFinetune = opt.continue_train
         # self.albedo_paths = sorted(self.albedo_paths)
         # self.mask_paths = sorted(self.mask_paths)
         assert (opt.resize_or_crop == 'resize_and_crop')
