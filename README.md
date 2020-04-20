@@ -1,7 +1,9 @@
 # Learning to separate Ambient and Flash Illuminants in a Single Image
 *Sebastian Dille, Sepideh Sarajian Maralan and Seyed Mahdi Hosseini Miangoleh*
 
+
 This repository was created as part of the ML course at SFU, Burnaby in Spring 2020.
+
 
 We have implemented a color-aware loss to address color shift in single image decomposition, especially targeted at seperating flash and ambient illuminantion in a single RGB image.
 
