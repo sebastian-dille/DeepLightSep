@@ -19,7 +19,10 @@ Additionally, the code skeleton is based on "https://github.com/junyanz/pytorch-
   
 
 Our contribution consists of the following files:
-
+-/data/aligned_dataset.py: several adjustements to enable training on only RGB inpt and ground truth.
+-/data/makedata1.py:
+-trainSingleColorLoss.sh: shell script to train the network on a multi-GPU research cluster
+-trainDoubleColorLoss.sh: shell script to train the network on a multi-GPU research cluster
 
 
 ### Pretrained model:
