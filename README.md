@@ -1,5 +1,5 @@
 # Learning to separate Ambient and Flash Illuminants in a Single Image
-Sebastian Dille, Sepideh Sarajian Maralan and Seyed Mahdi Hosseini Miangoleh
+*Sebastian Dille, Sepideh Sarajian Maralan and Seyed Mahdi Hosseini Miangoleh*
 
 This repository was created as part of the ML course at SFU, Burnaby in Spring 2020.
 
