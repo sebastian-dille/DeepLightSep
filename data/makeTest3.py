@@ -35,10 +35,17 @@ for folder in listOfFolders:
 	image2 = image2.resize((256, 256))
 	lab1 = color.rgb2lab(image1)
 	lab2 = color.rgb2lab(image2)
-
-	lab1[:,:,2] = lab1[:,:,2] - 30
-	lab2[:,:,2] = lab2[:,:,2] + 30
-
+	r = random.randint(0,1)
+	r1 = random.randint(5,20)
+	r2 = random.randint(5,20)
+	# print(r1)
+	# print(r2)
+	if (r ==0):
+		lab1[:,:,2] = lab1[:,:,2] - r1
+		lab2[:,:,2] = lab2[:,:,2] + r2
+	else:
+		lab1[:,:,2] = lab1[:,:,2] + r1
+		lab2[:,:,2] = lab2[:,:,2] - r2
 	lab1 = color.lab2rgb(lab1)
 	lab2 = color.lab2rgb(lab2)
 	im1 = color.rgb2xyz(lab1)
