@@ -1,4 +1,4 @@
-# Learning to separate Ambient and FLash Illuminants in a Single Image
+# Learning to separate Ambient and Flash Illuminants in a Single Image
 
 This repository was created as part of the ML course at SFU, Burnaby in Spring 2020.
 
