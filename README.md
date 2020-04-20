@@ -31,8 +31,8 @@ Our contribution consists of the following files:
   * **/data/makeTrain3.py:**  
   * **/models/networks.py:** added the JointColoLoss, the actual color-aware loss function
   * **/models/threelayers_color_model.py:** python class for the new color loss model
-  * **trainSingleColorLoss.sh:** shell script to train the network on a multi-GPU research cluster
-  * **trainDoubleColorLoss.sh:** shell script to train the network on a multi-GPU research cluster
+  * **trainSingleLoss.sh:** shell script to train the network on a multi-GPU research cluster
+  * **trainDoubleLoss.sh:** shell script to train the network on a multi-GPU research cluster
 
 
 ### Pretrained model:
