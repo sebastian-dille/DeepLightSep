@@ -23,12 +23,12 @@ Additionally, the code skeleton is based on "https://github.com/junyanz/pytorch-
 
 Our contribution consists of the following files:
   * **/data/aligned_dataset.py:** several adjustements to enable training on only RGB inpt and ground truth.
-  * **/data/makeTest1.py:**
-  * **/data/makeTest2.py:**
-  * **/data/makeTest3.py:**
-  * **/data/makeTrain1.py:**
-  * **/data/makeTrain2.py:**  
-  * **/data/makeTrain3.py:**  
+  * **/data/makeTest1.py:** script to create the test set "old"
+  * **/data/makeTest2.py:** script to create the test set "new"
+  * **/data/makeTest3.py:** script to create the test set "random" 
+  * **/data/makeTrain1.py:** script to create the training set "old" 
+  * **/data/makeTrain2.py:** script to create the training set "new" 
+  * **/data/makeTrain3.py:** script to create the training set "random" 
   * **/models/networks.py:** added the JointColoLoss, the actual color-aware loss function
   * **/models/threelayers_color_model.py:** python class for the new color loss model
   * **trainSingleLoss.sh:** shell script to train the network on a multi-GPU research cluster
