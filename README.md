@@ -33,7 +33,7 @@ Our contribution consists of the following files:
   * **/models/threelayers_color_model.py:** python class for the new color loss model
   * **trainSingleLoss.sh:** shell script to train the network on a multi-GPU research cluster
   * **trainDoubleLoss.sh:** shell script to train the network on a multi-GPU research cluster
-  * **evaluate_illumination_prediction.m**: Matlab scribt to evaluate the results
+  * **evaluate_illumination_prediction.m**: Matlab script to evaluate the results
 
 
 ### Pretrained model:
