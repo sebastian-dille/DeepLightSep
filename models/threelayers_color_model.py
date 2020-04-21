@@ -124,13 +124,12 @@ class ThreeLayersColorModel(BaseModel):
         #gt_im1, gt_im2 = gt_imgs[:,:3,:,:], gt_imgs[:,3:,:,:]
         img = est_im1 + est_im2
 
-        #self.loss_G_C = .5 * self.rloss(self.img1, self.img2, est_im1, est_im2, self.mask) + \
-        #                .5 * self.rloss(self.img1, self.img2, gt_im1, gt_im2, self.mask) + \
-        #                .5 * self.loss(self.rgb_img, img, self.mask)
+       
 
-        #TODO: add color loss
+        #new color loss - to activate DoubleColorLoss, uncomment the second line
         self.loss_G_C = .5 * self.loss(self.img1, est_im1, self.mask)
-
+        #self.loss_G_C += .5 * self.loss(self.img2, est_im2, self.mask)
+        
         self.loss_G_C.backward()
 
     # def backward_G_B(self):
