@@ -40,13 +40,7 @@ for folder in listOfFolders:
 	imag = (im1 + im2)/2
 	imag = color.xyz2rgb(imag)
 	imag = img_as_float(imag)
-	# plt.imshow(img1)
-	# plt.show()
-	# plt.imshow(img2)
-	# plt.show()
-	# plt.imshow(imag)
-	# plt.show()
-	# print(imag)
+
 	matName = str(i)+".mat"
 	width , height = image1.size
 	im1 = np.zeros([width,height,3],dtype=np.float)
@@ -54,11 +48,8 @@ for folder in listOfFolders:
 	chrom = np.zeros([width,height,3],dtype=np.float)
 	mask = np.zeros([width,height,3],dtype=np.float)
 	mask.fill(1)
-	# print(width)
-	# print(mask)
-	# save()
+
 	completeName = os.path.join(outFolder, matName)   
 	sio.savemat(completeName , {'img1':img1,'img2':img2, 'imag':imag, 'im1': im1, 'im2':im2, 'chrom':chrom, 'mask':mask})
 	i = i+1
-		# im1 = Image.open(names[randomNums[0]])
 	print(i)		
